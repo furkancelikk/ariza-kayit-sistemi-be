@@ -4,7 +4,6 @@ import com.furkancelik.arizakayitsistemi.annotation.CurrentUser;
 import com.furkancelik.arizakayitsistemi.dto.UpdateUserDTO;
 import com.furkancelik.arizakayitsistemi.dto.UserDTO;
 import com.furkancelik.arizakayitsistemi.error.ApiError;
-import com.furkancelik.arizakayitsistemi.model.Post;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.service.UserService;
 import com.furkancelik.arizakayitsistemi.shared.GenericResponse;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,5 +66,12 @@ public class UserController {
         }
         apiError.setValidationErrors(validationErrors);
         return apiError;
+    }
+
+    @DeleteMapping(value = "/{username}")
+    @PreAuthorize("#username == principal.username")
+    public GenericResponse deleteByUsername(@PathVariable("username") String username){
+        userService.deleteByUsername(username);
+        return new GenericResponse("Deleted");
     }
 }

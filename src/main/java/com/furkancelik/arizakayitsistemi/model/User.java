@@ -2,7 +2,8 @@ package com.furkancelik.arizakayitsistemi.model;
 
 import com.furkancelik.arizakayitsistemi.annotation.FileType;
 import com.furkancelik.arizakayitsistemi.annotation.UniqueUsername;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,9 +12,11 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class User implements UserDetails {
 
     @Id
@@ -37,6 +40,9 @@ public class User implements UserDetails {
     @Lob
     @FileType(types = {"image/png", "image/jpeg"})
     private String image;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    private List<Post> posts;
 
 //    private String role;
 

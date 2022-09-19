@@ -1,12 +1,11 @@
 package com.furkancelik.arizakayitsistemi.service;
 
 import com.furkancelik.arizakayitsistemi.configuration.AppConfiguration;
+import com.furkancelik.arizakayitsistemi.error.NotFoundException;
 import com.furkancelik.arizakayitsistemi.model.FileAttachment;
+import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.repository.FileAttachmentRepository;
-import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -73,7 +72,7 @@ public class FileService {
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NotFoundException("File not found");
         }
 
     }
@@ -113,6 +112,14 @@ public class FileService {
         for (FileAttachment attachment : attachmentList) {
             this.removeAttachment(attachment.getName());
             fileAttachmentRepository.deleteById(attachment.getId());
+        }
+    }
+
+    public void removeUserFiles(User user) {
+        this.removeProfileImage(user.getImage());
+        List<FileAttachment> attachmentList = fileAttachmentRepository.findByPostUser(user);
+        for (FileAttachment attachment : attachmentList) {
+            this.removeAttachment(attachment.getName());
         }
     }
 }

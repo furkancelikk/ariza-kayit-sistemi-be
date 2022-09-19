@@ -1,13 +1,15 @@
 package com.furkancelik.arizakayitsistemi.dto;
 
 import com.furkancelik.arizakayitsistemi.annotation.FileType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 // kullanıcının güncelleyebileceği alanlar için oluşturulmuştur. modelde olduğu gibi validasyon şartları vardır
-@Data
+@Getter
+@Setter
 public class UpdateUserDTO {
 
     @NotNull(message = "{custom.constraints.displayName.NotNull.message}")

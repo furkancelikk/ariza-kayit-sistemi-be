@@ -1,10 +1,12 @@
 package com.furkancelik.arizakayitsistemi.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
 public class PostSubmitDTO {
 
     @Size(min = 5, max = 1000, message = "{custom.constraints.post.content.Size.message}")

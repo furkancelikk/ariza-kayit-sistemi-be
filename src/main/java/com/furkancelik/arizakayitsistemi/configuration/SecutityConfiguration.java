@@ -28,6 +28,7 @@ public class SecutityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/1.0/auth").authenticated()
                 .antMatchers(HttpMethod.PUT,"/api/1.0/user/{username}").authenticated()
+                .antMatchers(HttpMethod.DELETE,"/api/1.0/user/{username}").authenticated()
                 .antMatchers(HttpMethod.POST,"/api/1.0/posts").authenticated()
                 .antMatchers(HttpMethod.POST,"/api/1.0/file/postAttachment").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/1.0/posts/{id}").authenticated()

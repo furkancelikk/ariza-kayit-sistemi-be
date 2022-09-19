@@ -52,4 +52,10 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
+    public void deleteByUsername(String username) {
+        User user = this.findByUsername(username);
+        fileService.removeUserFiles(user);
+        userRepository.delete(user);
+    }
 }

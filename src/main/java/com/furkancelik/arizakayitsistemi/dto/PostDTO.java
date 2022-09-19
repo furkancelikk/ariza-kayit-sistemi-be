@@ -1,10 +1,11 @@
 package com.furkancelik.arizakayitsistemi.dto;
 
-import com.furkancelik.arizakayitsistemi.model.FileAttachment;
 import com.furkancelik.arizakayitsistemi.model.Post;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class PostDTO {
 
     private Long id;

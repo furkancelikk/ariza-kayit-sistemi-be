@@ -1,9 +1,11 @@
 package com.furkancelik.arizakayitsistemi.dto;
 
 import com.furkancelik.arizakayitsistemi.model.FileAttachment;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class FileAttachmentDTO {
 
     private String name;
