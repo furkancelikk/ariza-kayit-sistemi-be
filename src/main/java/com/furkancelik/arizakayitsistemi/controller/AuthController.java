@@ -1,20 +1,29 @@
 package com.furkancelik.arizakayitsistemi.controller;
 
-import com.furkancelik.arizakayitsistemi.annotation.CurrentUser;
-import com.furkancelik.arizakayitsistemi.dto.UserDTO;
-import com.furkancelik.arizakayitsistemi.model.User;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.furkancelik.arizakayitsistemi.dto.CredentialsDTO;
+import com.furkancelik.arizakayitsistemi.service.AuthService;
+import com.furkancelik.arizakayitsistemi.shared.AuthResponse;
+import com.furkancelik.arizakayitsistemi.shared.GenericResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 
 
 @RestController
-@RequestMapping("/api/1.0/auth")
 public class AuthController {
 
-    @PostMapping
-    public ResponseEntity<?> handleAuthentication(@CurrentUser User user){
-        return ResponseEntity.ok(new UserDTO(user));
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping(value = "/api/1.0/auth")
+    public AuthResponse handleAuthentication(@RequestBody CredentialsDTO credentials) {
+        return authService.authenticate(credentials);
+    }
+
+    @PostMapping(value = "/api/1.0/logout")
+    public GenericResponse handleLogout(@RequestHeader(name = "AUTHORIZATION") String authorization) {
+        String token = authorization.substring(7);
+        authService.clearToken(token);
+        return new GenericResponse("Logout success");
     }
 }

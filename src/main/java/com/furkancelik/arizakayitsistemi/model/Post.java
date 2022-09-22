@@ -28,6 +28,6 @@ public class Post {
 
     // orphanRemoval post silindiğinde onunla ilişkili olanı da siler
     // Cascade.REMOVE da kullanılabilir bu da post silindiğinde attachment siler
-    @OneToOne(mappedBy = "post", orphanRemoval = true)
+    @OneToOne(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private FileAttachment attachment;
 }

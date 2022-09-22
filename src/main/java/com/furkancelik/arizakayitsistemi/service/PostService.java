@@ -1,5 +1,6 @@
 package com.furkancelik.arizakayitsistemi.service;
 
+import com.furkancelik.arizakayitsistemi.dto.PostDTO;
 import com.furkancelik.arizakayitsistemi.dto.PostSubmitDTO;
 import com.furkancelik.arizakayitsistemi.model.FileAttachment;
 import com.furkancelik.arizakayitsistemi.model.Post;
@@ -103,5 +104,9 @@ public class PostService {
             fileService.removeAttachment(fileName);
         }
         postRepository.deleteById(id);
+    }
+
+    public PostDTO findByID(Long id) {
+        return new PostDTO(postRepository.findById(id).get());
     }
 }

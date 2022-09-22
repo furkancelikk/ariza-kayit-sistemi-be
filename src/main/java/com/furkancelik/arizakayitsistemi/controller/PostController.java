@@ -3,6 +3,7 @@ package com.furkancelik.arizakayitsistemi.controller;
 import com.furkancelik.arizakayitsistemi.annotation.CurrentUser;
 import com.furkancelik.arizakayitsistemi.dto.PostDTO;
 import com.furkancelik.arizakayitsistemi.dto.PostSubmitDTO;
+import com.furkancelik.arizakayitsistemi.model.Post;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.service.PostService;
 import com.furkancelik.arizakayitsistemi.service.UserService;

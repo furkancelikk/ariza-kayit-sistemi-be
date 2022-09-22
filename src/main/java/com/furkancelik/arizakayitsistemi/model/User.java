@@ -41,8 +41,11 @@ public class User implements UserDetails {
     @FileType(types = {"image/png", "image/jpeg"})
     private String image;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Token> token;
 
 //    private String role;
 
