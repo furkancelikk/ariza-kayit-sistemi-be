@@ -1,18 +1,18 @@
 package com.furkancelik.arizakayitsistemi;
 
-import com.furkancelik.arizakayitsistemi.model.Post;
+import com.furkancelik.arizakayitsistemi.enums.UserRole;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.repository.PostRepository;
 import com.furkancelik.arizakayitsistemi.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication //(exclude = SecurityAutoConfiguration.class)
+@EnableSwagger2
 public class ArizaKayitSistemiBeApplication {
 
     public static void main(String[] args) {
@@ -32,6 +32,7 @@ public class ArizaKayitSistemiBeApplication {
                     user.setUsername("admin");
                     user.setDisplayName("ADMIN");
                     user.setPassword(new BCryptPasswordEncoder().encode("12345"));
+                    user.setRole(UserRole.ADMIN);
                     userRepository.save(user);
                 }
 

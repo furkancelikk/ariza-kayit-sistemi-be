@@ -1,4 +1,4 @@
-package com.furkancelik.arizakayitsistemi.dto;
+package com.furkancelik.arizakayitsistemi.dto.user;
 
 import com.furkancelik.arizakayitsistemi.annotation.FileType;
 import lombok.Getter;

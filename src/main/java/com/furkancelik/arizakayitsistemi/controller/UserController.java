@@ -1,8 +1,10 @@
 package com.furkancelik.arizakayitsistemi.controller;
 
 import com.furkancelik.arizakayitsistemi.annotation.CurrentUser;
-import com.furkancelik.arizakayitsistemi.dto.UpdateUserDTO;
-import com.furkancelik.arizakayitsistemi.dto.UserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UpdateUserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UserSubmitDTO;
+import com.furkancelik.arizakayitsistemi.enums.UserRole;
 import com.furkancelik.arizakayitsistemi.error.ApiError;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.service.UserService;
@@ -33,9 +35,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public GenericResponse signUp(@Valid @RequestBody User user){
-        logger.info(user.toString());
-        userService.save(user);
+    @PreAuthorize("@authService.isRoleAllowed(principal, {'ADMIN'})")
+    public GenericResponse createUser(@Valid @RequestBody UserSubmitDTO userSubmitDTO){
+        logger.info(userSubmitDTO.toString());
+        User user = new User(userSubmitDTO);
+        userService.save(user, UserRole.USER);
         return new GenericResponse("User created");
     }
 

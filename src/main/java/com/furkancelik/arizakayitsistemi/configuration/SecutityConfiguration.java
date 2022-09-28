@@ -1,5 +1,6 @@
 package com.furkancelik.arizakayitsistemi.configuration;
 
+import com.furkancelik.arizakayitsistemi.enums.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -22,15 +23,20 @@ public class SecutityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthEntryPoint()); // eğer bu olmazsa tarayıcıda login popup çıkar
 
+//        http.authorizeRequests()
+//                .antMatchers(HttpMethod.POST,"/api/1.0/auth}").authenticated()
+//                .antMatchers(HttpMethod.DELETE,"/api/1.0/user/{username}").authenticated()
+//                .antMatchers(HttpMethod.POST,"/api/1.0/posts").authenticated()
+//                .antMatchers(HttpMethod.POST,"/api/1.0/file/postAttachment").authenticated()
+//                .antMatchers(HttpMethod.DELETE,"/api/1.0/posts/{id}").authenticated()
+//                .antMatchers(HttpMethod.POST, "/api/1.0/logout").authenticated()
+//                .antMatchers(HttpMethod.POST, "/api/1.0/categories").authenticated()
+//                .and()
+//                .authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests()
-                .antMatchers(HttpMethod.PUT,"/api/1.0/user/{username}").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/1.0/user/{username}").authenticated()
-                .antMatchers(HttpMethod.POST,"/api/1.0/posts").authenticated()
-                .antMatchers(HttpMethod.POST,"/api/1.0/file/postAttachment").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/1.0/posts/{id}").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/1.0/logout").authenticated()
-                .and()
-                .authorizeRequests().anyRequest().permitAll();
+                        .antMatchers(HttpMethod.POST, "/api/1.0/auth").permitAll()
+                        .antMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .anyRequest().authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class); // bizim filtemizin önce çalışmasını sağlar

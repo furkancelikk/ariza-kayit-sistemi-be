@@ -1,9 +1,9 @@
 package com.furkancelik.arizakayitsistemi.controller;
 
 import com.furkancelik.arizakayitsistemi.annotation.CurrentUser;
-import com.furkancelik.arizakayitsistemi.dto.PostDTO;
-import com.furkancelik.arizakayitsistemi.dto.PostSubmitDTO;
-import com.furkancelik.arizakayitsistemi.model.Post;
+import com.furkancelik.arizakayitsistemi.dto.post.PostDTO;
+import com.furkancelik.arizakayitsistemi.dto.post.PostSubmitDTO;
+import com.furkancelik.arizakayitsistemi.dto.post.PostUpdateDTO;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.service.PostService;
 import com.furkancelik.arizakayitsistemi.service.UserService;
@@ -39,8 +39,19 @@ public class PostController {
     }
 
     @GetMapping
-    public Page<PostDTO> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return postService.getAll(pageable).map(PostDTO::new);
+    public ResponseEntity<?> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                @RequestParam(name = "category", required = false) Long categoryID, @CurrentUser User user) {
+        return ResponseEntity.ok(postService.getAll(pageable, user, categoryID).map(PostDTO::new));
+    }
+
+    @PutMapping
+    public PostDTO updatePost(@Valid @RequestBody PostUpdateDTO postUpdateDTO){
+        return new PostDTO(postService.updatePost(postUpdateDTO));
+    }
+
+    @GetMapping(value = "/get/{id:[0-9]+}")
+    public PostDTO getByID(@PathVariable("id") Long id){
+        return new PostDTO(postService.findByID(id));
     }
 
     @GetMapping(value = {"/{id:[0-9]+}", "/user/{username}/{id:[0-9]+}"}) // id değerinin sayı olduğunu belirtmek regular exp kullanıldı. + işareti
@@ -48,27 +59,31 @@ public class PostController {
     public ResponseEntity<?> getAllRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                             @PathVariable(name = "id") Long id,
                                             @PathVariable(name = "username", required = false) String username,
+                                            @RequestParam(name = "category", required = false) Long categoryID,
                                             @RequestParam(name = "count", defaultValue = "false", required = false) boolean count,
-                                            @RequestParam(name = "direction", defaultValue = "before", required = false) String direction) {
+                                            @RequestParam(name = "direction", defaultValue = "before", required = false) String direction,
+                                            @CurrentUser User user) {
         if (count) {
-            Long postCount = postService.getNewPostsCount(id, username);
+            Long postCount = postService.getNewPostsCount(id, username, user, categoryID);
             Map<String, Object> map = new HashMap<>();
             map.put("count", postCount);
             return ResponseEntity.ok(map);
         }
         if (direction.equals("after")) {
-            List<PostDTO> newPosts = postService.getNewPosts(id, username, pageable.getSort()).stream().
+            List<PostDTO> newPosts = postService.getNewPosts(id, username, user, categoryID, pageable.getSort()).stream().
                     map(PostDTO::new).collect(Collectors.toList());
             return ResponseEntity.ok(newPosts);
         }
-        return ResponseEntity.ok(postService.getOldPosts(id, username, pageable).map(PostDTO::new));
+        return ResponseEntity.ok(postService.getOldPosts(id, username, user, categoryID, pageable).map(PostDTO::new));
     }
 
     @GetMapping("/user/{username}")
     public Page<PostDTO> getUsersPostsRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                               @PathVariable("username") String username) {
+                                               @PathVariable("username") String username,
+                                               @RequestParam(name = "category", required = false) Long categoryID,
+                                               @CurrentUser User currentUser) {
         User user = userService.findByUsername(username);
-        return postService.getByUser(pageable, user).map(PostDTO::new);
+        return postService.getByUser(pageable, user, currentUser, categoryID).map(PostDTO::new);
     }
 
     @DeleteMapping(value = "/{id:[0-9]+}")
@@ -77,6 +92,7 @@ public class PostController {
         postService.deleteByID(id);
         return new GenericResponse("Post deleted");
     }
+
 
 //    @GetMapping("/user/{username}/{postID:[0-9]+}")
 //    public ResponseEntity<?> getUsersOldPosts(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,

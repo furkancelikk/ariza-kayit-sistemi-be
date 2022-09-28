@@ -1,6 +1,6 @@
 package com.furkancelik.arizakayitsistemi.shared;
 
-import com.furkancelik.arizakayitsistemi.dto.UserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UserDTO;
 import lombok.Getter;
 import lombok.Setter;
 

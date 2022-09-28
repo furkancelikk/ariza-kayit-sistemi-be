@@ -1,22 +1,28 @@
 package com.furkancelik.arizakayitsistemi.service;
 
 import com.furkancelik.arizakayitsistemi.dto.CredentialsDTO;
-import com.furkancelik.arizakayitsistemi.dto.UserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UserDTO;
 import com.furkancelik.arizakayitsistemi.error.AuthException;
+import com.furkancelik.arizakayitsistemi.model.FileAttachment;
 import com.furkancelik.arizakayitsistemi.model.Token;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.repository.TokenRepository;
 import com.furkancelik.arizakayitsistemi.repository.UserRepository;
 import com.furkancelik.arizakayitsistemi.shared.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@EnableScheduling
 public class AuthService {
 
     @Autowired
@@ -41,6 +47,7 @@ public class AuthService {
         Token tokenEntity = new Token();
         tokenEntity.setToken(token);
         tokenEntity.setUser(user);
+        tokenEntity.setCreation(new Date());
         tokenRepository.save(tokenEntity);
         AuthResponse authResponse = new AuthResponse();
         authResponse.setUser(userDTO);
@@ -63,5 +70,22 @@ public class AuthService {
 
     public void clearToken(String token) {
         tokenRepository.deleteById(token);
+    }
+
+    public boolean isRoleAllowed(User loggedUser, String[] roles){
+        for (String role : roles) {
+            if (loggedUser.getRole().toString().equals(role))
+                return true;
+        }
+        throw new AuthException();
+    }
+
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    public void cleanExpiredToken() {
+        Date twentyFourHoursAgo = new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000)); // 24 saatin milisaniye cinsi
+        List<Token> tokenList = tokenRepository.findByCreationBefore(twentyFourHoursAgo);
+        for (Token token : tokenList) {
+            this.clearToken(token.getToken());
+        }
     }
 }

@@ -1,17 +1,23 @@
 package com.furkancelik.arizakayitsistemi.model;
 
 import com.furkancelik.arizakayitsistemi.annotation.FileType;
+import com.furkancelik.arizakayitsistemi.annotation.OneOf;
 import com.furkancelik.arizakayitsistemi.annotation.UniqueUsername;
+import com.furkancelik.arizakayitsistemi.dto.personnel.PersonnelSubmitDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UserSubmitDTO;
+import com.furkancelik.arizakayitsistemi.enums.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -42,16 +48,37 @@ public class User implements UserDetails {
     private String image;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Token> token;
+    private List<Token> token = new ArrayList<>();
 
-//    private String role;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Role alani bos olamaz")
+    @OneOf(values = {"ADMIN", "PERSONNEL", "USER"})
+    private UserRole role;
+
+    @ManyToMany(cascade = CascadeType.MERGE)
+    private List<Category> categories = new ArrayList<>();
+
+    public User(PersonnelSubmitDTO personnelSubmitDTO) {
+        this.username = personnelSubmitDTO.getUsername();
+        this.displayName = personnelSubmitDTO.getDisplayName();
+        this.password = personnelSubmitDTO.getPassword();
+        this.categories = personnelSubmitDTO.getCategories();
+    }
+
+    public User() {}
+
+    public User(UserSubmitDTO userSubmitDTO) {
+        this.username = userSubmitDTO.getUsername();
+        this.displayName = userSubmitDTO.getDisplayName();
+        this.password = userSubmitDTO.getPassword();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.createAuthorityList("Role_user");
+        return Collections.singleton(new SimpleGrantedAuthority(this.role.toString()));
     }
 
     @Override

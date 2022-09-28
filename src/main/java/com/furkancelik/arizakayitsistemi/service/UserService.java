@@ -1,7 +1,9 @@
 package com.furkancelik.arizakayitsistemi.service;
 
-import com.furkancelik.arizakayitsistemi.dto.UpdateUserDTO;
+import com.furkancelik.arizakayitsistemi.dto.user.UpdateUserDTO;
+import com.furkancelik.arizakayitsistemi.enums.UserRole;
 import com.furkancelik.arizakayitsistemi.error.NotFoundException;
+import com.furkancelik.arizakayitsistemi.model.Category;
 import com.furkancelik.arizakayitsistemi.model.User;
 import com.furkancelik.arizakayitsistemi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +22,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FileService fileService;
+    private final CategoryService categoryService;
 
-    public User save(User user) {
+    public User save(User user, UserRole role) {
+        user.setRole(role);
+        if (role == UserRole.PERSONNEL){
+            List<Category> categoryList = new ArrayList<>();
+            for (Category category : user.getCategories()) {
+                categoryList.add(categoryService.findByID(category.getId()));
+            }
+            user.setCategories(categoryList);
+        }
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return userRepository.save(user);
     }
