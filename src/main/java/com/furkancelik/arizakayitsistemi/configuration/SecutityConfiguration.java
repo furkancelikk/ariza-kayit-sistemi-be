@@ -36,7 +36,8 @@ public class SecutityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, "/api/1.0/auth").permitAll()
                         .antMatchers(HttpMethod.GET, "/images/**").permitAll()
-                        .anyRequest().authenticated();
+                        .antMatchers( "/api/1.0/**").authenticated();
+
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class); // bizim filtemizin önce çalışmasını sağlar
